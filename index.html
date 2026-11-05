@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Тест: Какая ты принцесса? 👑</title>
+  <meta name="description" content="Узнай, какая принцесса скрывается в твоем характере — Белль, Эльза, Ариэль, Рапунцель или Мулан?">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Фоновые декоративные сферы -->
+  <div class="bg-decor">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <!-- Холст для конфетти при победе -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <main class="app-container">
+    <div class="glass-card">
+      
+      <!-- ЭКРАН 1: Приветствие -->
+      <section id="screen-welcome" class="screen active">
+        <div style="text-align: center;">
+          <div class="welcome-badge">✨ Экспресс-тест для гостей</div>
+          <div class="hero-icon">👑</div>
+          <h1 class="title">Какая ты принцесса?</h1>
+          <p class="subtitle">Ответь на <span id="welcome-q-count">7</span> быстрых вопросов и открой свой истинный королевский архетип!</p>
+        </div>
+
+        <div class="features-list">
+          <div class="feature-item">
+            <span class="icon">⏱️</span>
+            <span>Займет всего <strong>1 минуту</strong></span>
+          </div>
+          <div class="feature-item">
+            <span class="icon">✨</span>
+            <span>8 уникальных королевских характеров</span>
+          </div>
+          <div class="feature-item">
+            <span class="icon">🎉</span>
+            <span>Идеально для ивентов, девичников и вечеринок</span>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" onclick="startQuiz()">
+          <span>Начать тест</span>
+          <span>✨</span>
+        </button>
+
+        <a href="projector.html" class="btn btn-secondary" title="Открыть экран с большим QR-кодом для проектора">
+          <span>📽️ Режим проектора / QR-код для гостей</span>
+        </a>
+
+        <div class="footer-note">
+          Показ на проекторе? <a href="projector.html">Экран с QR-кодом</a> · <a href="admin.html">Админка ⚙️</a>
+        </div>
+      </section>
+
+      <!-- ЭКРАН 2: Вопрос викторины -->
+      <section id="screen-quiz" class="screen">
+        <div class="quiz-header">
+          <div class="progress-info">
+            <span>Вопрос <span id="current-q-num">1</span> из <span id="total-q-num">7</span></span>
+            <span style="color: #ec4899;">👑</span>
+          </div>
+          <div class="progress-bar-wrap">
+            <div id="progress-bar" class="progress-bar-fill"></div>
+          </div>
+          <h2 id="question-text" class="question-text">Вопрос...</h2>
+          <div id="question-subtext" class="question-subtext">Подзаголовок вопроса...</div>
+        </div>
+
+        <div id="options-list" class="options-list">
+          <!-- Кнопки вариантов генерируются скриптом quiz.js -->
+        </div>
+      </section>
+
+      <!-- ЭКРАН 3: Результат -->
+      <section id="screen-result" class="screen">
+        <div class="result-card">
+          <div class="result-badge">Твой королевский архетип</div>
+          
+          <div class="result-avatar-wrap">
+            <div class="result-avatar-glow"></div>
+            <div class="result-avatar" id="result-emoji">👑</div>
+          </div>
+
+          <h2 class="result-name" id="result-name">Принцесса</h2>
+          <div class="result-title" id="result-title">Описание титула</div>
+
+          <div class="result-quote" id="result-quote">«Цитата персонажа»</div>
+
+          <p class="result-desc" id="result-desc">Подробный психологический портрет...</p>
+
+          <div class="traits-title">Ключевые суперсилы:</div>
+          <div class="traits-tags" id="traits-tags">
+            <!-- Теги черт характера -->
+          </div>
+
+          <div class="result-actions">
+            <button class="btn btn-primary" onclick="shareResult()">
+              <span>📲 Поделиться результатом</span>
+            </button>
+            <button class="btn btn-secondary" onclick="startQuiz()">
+              <span>🔄 Пройти еще раз</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Всплывающее уведомление (Toast) -->
+  <div id="toast" class="toast">Уведомление</div>
+
+  <!-- Скрипты -->
+  <script src="questions.js"></script>
+  <script src="quiz.js"></script>
+</body>
+</html>

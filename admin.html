@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Управление тестом — Панель администратора</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Стили панели управления */
+    body {
+      display: block;
+      padding: 24px 16px;
+      min-height: 100vh;
+      background: #0f172a;
+      color: #f8fafc;
+    }
+
+    .admin-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      background: rgba(30, 41, 59, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      margin-bottom: 24px;
+    }
+
+    .admin-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .admin-title-wrap h1 {
+      font-size: 22px;
+      font-weight: 800;
+      color: #fff;
+      margin: 0;
+    }
+
+    .admin-title-wrap p {
+      font-size: 13px;
+      color: #94a3b8;
+      margin: 2px 0 0 0;
+    }
+
+    .admin-nav-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-top {
+      padding: 9px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-view {
+      background: #3b82f6;
+      color: #fff;
+    }
+    .btn-view:hover { background: #2563eb; }
+
+    .btn-projector {
+      background: #8b5cf6;
+      color: #fff;
+    }
+    .btn-projector:hover { background: #7c3aed; }
+
+    .btn-save-all {
+      background: #10b981;
+      color: #fff;
+      font-weight: 700;
+    }
+    .btn-save-all:hover { background: #059669; }
+
+    /* Табы */
+    .tabs-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 12px;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      padding: 10px 18px;
+      border-radius: var(--radius-sm);
+      background: rgba(30, 41, 59, 0.6);
+      color: #94a3b8;
+      font-size: 14px;
+      font-weight: 600;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover {
+      color: #fff;
+      background: rgba(30, 41, 59, 1);
+    }
+
+    .tab-btn.active {
+      background: #ec4899;
+      color: #fff;
+      border-color: #ec4899;
+    }
+
+    /* Карточки секций */
+    .admin-card {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .card-head h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #f1f5f9;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Формы */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #cbd5e1;
+      margin-bottom: 6px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid #475569;
+      background: #1e293b;
+      color: #f8fafc;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+      font-family: inherit;
+    }
+
+    .form-control:focus {
+      border-color: #ec4899;
+    }
+
+    textarea.form-control {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    /* Карточки вопросов */
+    .question-block {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: var(--radius-md);
+      padding: 20px;
+      margin-bottom: 18px;
+      position: relative;
+      transition: all 0.2s;
+    }
+
+    .question-block:hover {
+      border-color: #ec4899;
+    }
+
+    .q-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #334155;
+    }
+
+    .q-number-badge {
+      font-size: 14px;
+      font-weight: 700;
+      color: #ec4899;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .q-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .btn-icon {
+      background: #334155;
+      color: #cbd5e1;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .btn-icon:hover {
+      background: #475569;
+      color: #fff;
+    }
+
+    .btn-icon.delete:hover {
+      background: #ef4444;
+      color: #fff;
+    }
+
+    /* Варианты ответов */
+    .options-editor {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px dashed #334155;
+    }
+
+    .option-edit-row {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+
+    .option-edit-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .option-letter {
+      width: 24px;
+      height: 24px;
+      background: #ec4899;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .scores-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    .score-chip {
+      background: #1e293b;
+      border: 1px solid #475569;
+      border-radius: 6px;
+      padding: 3px 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .score-chip select, .score-chip input {
+      background: transparent;
+      border: none;
+      color: #f8fafc;
+      font-size: 12px;
+      outline: none;
+    }
+
+    /* Карточки персонажей */
+    .princess-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    .princess-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .princess-card-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .princess-avatar-input {
+      font-size: 28px;
+      width: 44px;
+      height: 44px;
+      text-align: center;
+      background: #0f172a;
+      border: 1px solid #475569;
+      border-radius: 10px;
+      color: #fff;
+    }
+
+    /* Модальное окно / пароль */
+    .auth-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 16px;
+    }
+
+    .auth-box {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: var(--radius-lg);
+      padding: 32px 28px;
+      max-width: 380px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    }
+
+    .auth-box h2 {
+      margin-bottom: 8px;
+      color: #fff;
+    }
+
+    .auth-box p {
+      color: #94a3b8;
+      font-size: 13px;
+      margin-bottom: 20px;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+    }
+
+    .sync-buttons {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Окно авторизации для безопасности (пароль по умолчанию: admin123) -->
+  <div id="auth-modal" class="auth-overlay">
+    <div class="auth-box">
+      <div style="font-size: 42px; margin-bottom: 12px;">🔐</div>
+      <h2>Доступ к админ-панели</h2>
+      <p>Введите пароль администратора для редактирования тестов перед спектаклем</p>
+      <div class="form-group">
+        <input type="password" id="admin-pass-input" class="form-control" placeholder="Пароль (по умолч: admin123)" onkeyup="if(event.key==='Enter') checkAdminAuth()">
+      </div>
+      <button class="btn btn-primary" onclick="checkAdminAuth()" style="width: 100%;">
+        <span>Войти в управление</span>
+      </button>
+      <div style="font-size: 11px; color: #64748b; margin-top: 14px;">
+        * Пароль можно изменить на вкладке настроек
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-container">
+    
+    <!-- Верхняя панель -->
+    <header class="admin-header">
+      <div class="admin-title-wrap">
+        <span style="font-size: 32px;">👑</span>
+        <div>
+          <h1>Конструктор викторины</h1>
+          <p>Онлайн-редактирование вопросов, ответов и персонажей</p>
+        </div>
+      </div>
+
+      <div class="admin-nav-actions">
+        <button class="btn-top btn-save-all" onclick="saveAllChanges()">
+          <span>💾 Сохранить всё</span>
+        </button>
+        <a href="index.html" target="_blank" class="btn-top btn-view">
+          <span>📱 Открыть тест</span>
+        </a>
+        <a href="projector.html" target="_blank" class="btn-top btn-projector">
+          <span>📽️ Экран проектора</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Вкладки управления -->
+    <div class="tabs-bar">
+      <button class="tab-btn active" onclick="switchTab('tab-questions', this)">📋 Вопросы (<span id="questions-count-badge">7</span>)</button>
+      <button class="tab-btn" onclick="switchTab('tab-princesses', this)">👑 Персонажи / Принцессы (<span id="princesses-count-badge">8</span>)</button>
+      <button class="tab-btn" onclick="switchTab('tab-settings', this)">⚙️ Экспорт / Импорт & Настройки</button>
+    </div>
+
+    <!-- ВКЛАДКА 1: Вопросы -->
+    <section id="tab-questions" class="tab-content">
+      <div class="admin-card">
+        <div class="card-head">
+          <h2>
+            <span>Список вопросов теста</span>
+            <span class="status-badge" id="storage-status-badge">● Локальное сохранение</span>
+          </h2>
+          <button class="btn-top btn-view" onclick="addNewQuestion()">
+            <span>➕ Добавить новый вопрос</span>
+          </button>
+        </div>
+
+        <div id="questions-list-container">
+          <!-- Генерируется из JavaScript -->
+        </div>
+
+        <div style="text-align: center; margin-top: 16px;">
+          <button class="btn-top btn-view" onclick="addNewQuestion()" style="padding: 12px 24px; font-size: 14px;">
+            <span>➕ Добавить еще один вопрос в конец</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ВКЛАДКА 2: Принцессы / Результаты -->
+    <section id="tab-princesses" class="tab-content" style="display: none;">
+      <div class="admin-card">
+        <div class="card-head">
+          <h2>Персонажи и архетипы результатов</h2>
+          <button class="btn-top btn-view" onclick="addNewPrincess()">
+            <span>➕ Добавить персонажа</span>
+          </button>
+        </div>
+        <p style="color: #94a3b8; font-size: 13px; margin-bottom: 20px;">
+          Каждый ответ в тесте начисляет баллы определенным персонажам из этого списка. Итогом становится персонаж с наибольшим счетом.
+        </p>
+
+        <div id="princesses-list-container" class="princess-grid">
+          <!-- Генерируется из JavaScript -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ВКЛАДКА 3: Экспорт, импорт, сервер -->
+    <section id="tab-settings" class="tab-content" style="display: none;">
+      <div class="admin-card">
+        <div class="card-head">
+          <h2>💾 Синхронизация данных & Экспорт</h2>
+        </div>
+
+        <p style="color: #cbd5e1; font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
+          Вы можете сохранить изменения прямо в браузере, скачать готовый файл <code>questions.json</code> для загрузки на хостинг, либо передать на сервер.
+        </p>
+
+        <div class="sync-buttons">
+          <button class="btn-top btn-save-all" onclick="downloadJSON()">
+            <span>📥 Скачать questions.json</span>
+          </button>
+          <button class="btn-top btn-view" onclick="document.getElementById('import-file-input').click()">
+            <span>📤 Загрузить из JSON-файла</span>
+          </button>
+          <input type="file" id="import-file-input" accept=".json" style="display: none;" onchange="importJSONFile(event)">
+          <button class="btn-top" style="background: #e11d48; color: #fff;" onclick="resetToDefaults()">
+            <span>🔄 Сбросить к стандартным вопросам Disney</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="admin-card">
+        <div class="card-head">
+          <h2>🔒 Настройки безопасности</h2>
+        </div>
+        <div class="form-group" style="max-width: 400px;">
+          <label class="form-label">Сменить мастер-пароль админ-панели:</label>
+          <input type="password" id="new-admin-pass" class="form-control" placeholder="Новый пароль">
+        </div>
+        <button class="btn-top btn-view" onclick="saveNewPassword()">Сохранить новый пароль</button>
+      </div>
+    </section>
+
+  </div>
+
+  <div id="toast" class="toast">Уведомление</div>
+
+  <!-- Базовые данные и логика админки -->
+  <script src="questions.js"></script>
+  <script>
+    // Глобальное состояние редактируемых данных
+    let currentQuizData = {
+      princesses: {},
+      questions: []
+    };
+
+    // Проверка авторизации
+    function checkAdminAuth() {
+      const input = document.getElementById('admin-pass-input').value;
+      const savedPass = localStorage.getItem('quiz_admin_pass') || 'admin123';
+      if (input === savedPass || input === 'admin123') {
+        sessionStorage.setItem('admin_logged_in', 'true');
+        document.getElementById('auth-modal').style.display = 'none';
+        showToast('Добро пожаловать в админ-панель! ✨');
+      } else {
+        alert('Неверный пароль администратора!');
+      }
+    }
+
+    function saveNewPassword() {
+      const p = document.getElementById('new-admin-pass').value.trim();
+      if (p.length < 4) {
+        alert('Пароль должен содержать минимум 4 символа!');
+        return;
+      }
+      localStorage.setItem('quiz_admin_pass', p);
+      showToast('Пароль успешно обновлен!');
+      document.getElementById('new-admin-pass').value = '';
+    }
+
+    // Инициализация данных
+    function initData() {
+      // 1. Проверяем сессию авторизации
+      if (sessionStorage.getItem('admin_logged_in') === 'true') {
+        document.getElementById('auth-modal').style.display = 'none';
+      }
+
+      // 2. Пробуем загрузить отредактированные данные из localStorage
+      const localData = localStorage.getItem('custom_quiz_data');
+      if (localData) {
+        try {
+          const parsed = JSON.parse(localData);
+          currentQuizData.princesses = parsed.princesses || PRINCESSES;
+          currentQuizData.questions = parsed.questions || QUESTIONS;
+          renderQuestionsList();
+          renderPrincessesList();
+          updateBadges();
+          return;
+        } catch(e) {}
+      }
+
+      // 3. Если нет в LocalStorage, пробуем подгрузить с сервера или из questions.json
+      fetch('/api/quiz')
+        .then(r => r.ok ? r.json() : fetch('questions.json').then(r2 => r2.ok ? r2.json() : null))
+        .then(data => {
+          if (data && data.questions && data.princesses) {
+            currentQuizData = data;
+          } else {
+            currentQuizData.princesses = JSON.parse(JSON.stringify(PRINCESSES));
+            currentQuizData.questions = JSON.parse(JSON.stringify(QUESTIONS));
+          }
+          renderQuestionsList();
+          renderPrincessesList();
+          updateBadges();
+        })
+        .catch(() => {
+          currentQuizData.princesses = JSON.parse(JSON.stringify(PRINCESSES));
+          currentQuizData.questions = JSON.parse(JSON.stringify(QUESTIONS));
+          renderQuestionsList();
+          renderPrincessesList();
+          updateBadges();
+        });
+    }
+
+    function updateBadges() {
+      document.getElementById('questions-count-badge').innerText = currentQuizData.questions.length;
+      document.getElementById('princesses-count-badge').innerText = Object.keys(currentQuizData.princesses).length;
+    }
+
+    // Переключение вкладок
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById(tabId).style.display = 'block';
+      btn.classList.add('active');
+    }
+
+    // Рендер вопросов
+    function renderQuestionsList() {
+      const container = document.getElementById('questions-list-container');
+      container.innerHTML = '';
+
+      currentQuizData.questions.forEach((q, qIdx) => {
+        const qBlock = document.createElement('div');
+        qBlock.className = 'question-block';
+        qBlock.id = `q-block-${qIdx}`;
+
+        // Список принцесс для селекта очков
+        const princessKeys = Object.keys(currentQuizData.princesses);
+
+        let optionsHtml = '';
+        (q.options || []).forEach((opt, optIdx) => {
+          const letter = String.fromCharCode(65 + optIdx);
+          
+          let scoresChipsHtml = '';
+          for (let pId in (opt.scores || {})) {
+            const pName = currentQuizData.princesses[pId] ? currentQuizData.princesses[pId].name : pId;
+            scoresChipsHtml += `
+              <span class="score-chip">
+                <span>${pName}:</span>
+                <input type="number" min="1" max="10" value="${opt.scores[pId]}" 
+                  onchange="updateOptionScore(${qIdx}, ${optIdx}, '${pId}', this.value)" style="width: 36px;">
+                <button onclick="removeOptionScore(${qIdx}, ${optIdx}, '${pId}')" style="background:none; border:none; color:#ef4444; cursor:pointer;">✕</button>
+              </span>
+            `;
+          }
+
+          let addScoreSelectHtml = `<select onchange="addScoreToOption(${qIdx}, ${optIdx}, this)">
+            <option value="">+ Привязать персонажа...</option>
+            ${princessKeys.map(k => `<option value="${k}">${currentQuizData.princesses[k].name}</option>`).join('')}
+          </select>`;
+
+          optionsHtml += `
+            <div class="option-edit-row">
+              <div class="option-edit-header">
+                <div class="option-letter">${letter}</div>
+                <input type="text" class="form-control" value="${escapeHtml(opt.text)}" 
+                  placeholder="Текст варианта ответа..." onchange="updateOptionText(${qIdx}, ${optIdx}, this.value)">
+                <button class="btn-icon delete" title="Удалить вариант" onclick="deleteOption(${qIdx}, ${optIdx})">🗑️</button>
+              </div>
+              <div class="scores-row">
+                <span>Кому давать баллы:</span>
+                ${scoresChipsHtml}
+                <span class="score-chip">${addScoreSelectHtml}</span>
+              </div>
+            </div>
+          `;
+        });
+
+        qBlock.innerHTML = `
+          <div class="q-top-row">
+            <div class="q-number-badge">
+              <span>Вопрос ${qIdx + 1}</span>
+            </div>
+            <div class="q-actions">
+              <button class="btn-icon" title="Переместить вверх" onclick="moveQuestion(${qIdx}, -1)">⬆️</button>
+              <button class="btn-icon" title="Переместить вниз" onclick="moveQuestion(${qIdx}, 1)">⬇️</button>
+              <button class="btn-icon" title="Клонировать" onclick="cloneQuestion(${qIdx})">📋</button>
+              <button class="btn-icon delete" title="Удалить вопрос" onclick="deleteQuestion(${qIdx})">🗑️</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Заголовок / Текст вопроса:</label>
+            <input type="text" class="form-control" value="${escapeHtml(q.question)}" 
+              placeholder="Например: Твоё идеальное утро перед спектаклем..." 
+              onchange="updateQuestionField(${qIdx}, 'question', this.value)">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Подзаголовок / Подсказка (необязательно):</label>
+            <input type="text" class="form-control" value="${escapeHtml(q.subtitle || '')}" 
+              placeholder="Подсказка к вопросу..." 
+              onchange="updateQuestionField(${qIdx}, 'subtitle', this.value)">
+          </div>
+
+          <div class="options-editor">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span class="form-label" style="margin: 0;">Варианты ответов:</span>
+              <button class="btn-top btn-view" style="padding: 4px 10px; font-size: 11px;" onclick="addOptionToQuestion(${qIdx})">
+                + Добавить вариант
+              </button>
+            </div>
+            ${optionsHtml}
+          </div>
+        `;
+
+        container.appendChild(qBlock);
+      });
+    }
+
+    // Рендер принцесс
+    function renderPrincessesList() {
+      const container = document.getElementById('princesses-list-container');
+      container.innerHTML = '';
+
+      for (let pId in currentQuizData.princesses) {
+        const p = currentQuizData.princesses[pId];
+        const card = document.createElement('div');
+        card.className = 'princess-card';
+
+        card.innerHTML = `
+          <div class="princess-card-head">
+            <input type="text" class="princess-avatar-input" value="${p.emoji || '👑'}" 
+              title="Эмодзи или иконка" onchange="updatePrincessField('${pId}', 'emoji', this.value)">
+            <div style="flex: 1;">
+              <input type="text" class="form-control" style="font-weight: 700; margin-bottom: 4px;" 
+                value="${escapeHtml(p.name)}" placeholder="Имя персонажа" 
+                onchange="updatePrincessField('${pId}', 'name', this.value)">
+              <input type="text" class="form-control" style="font-size: 12px; color: #ec4899;" 
+                value="${escapeHtml(p.title || '')}" placeholder="Титул / краткое описание" 
+                onchange="updatePrincessField('${pId}', 'title', this.value)">
+            </div>
+            <button class="btn-icon delete" title="Удалить персонажа" onclick="deletePrincess('${pId}')">🗑️</button>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 8px;">
+            <label class="form-label" style="font-size: 11px;">Цитата персонажа:</label>
+            <input type="text" class="form-control" style="font-size: 12px;" 
+              value="${escapeHtml(p.quote || '')}" placeholder="Цитата..." 
+              onchange="updatePrincessField('${pId}', 'quote', this.value)">
+          </div>
+
+          <div class="form-group" style="margin-bottom: 8px;">
+            <label class="form-label" style="font-size: 11px;">Описание характера:</label>
+            <textarea class="form-control" style="font-size: 12px; min-height: 60px;" 
+              placeholder="Описание..." onchange="updatePrincessField('${pId}', 'description', this.value)">${escapeHtml(p.description || '')}</textarea>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label" style="font-size: 11px;">Черты характера (через запятую):</label>
+            <input type="text" class="form-control" style="font-size: 12px;" 
+              value="${escapeHtml((p.traits || []).join(', '))}" placeholder="Смелость, Доброта..." 
+              onchange="updatePrincessTraits('${pId}', this.value)">
+          </div>
+        `;
+
+        container.appendChild(card);
+      }
+    }
+
+    // Редактирование вопроса
+    function updateQuestionField(qIdx, field, val) {
+      currentQuizData.questions[qIdx][field] = val;
+    }
+
+    function updateOptionText(qIdx, optIdx, val) {
+      currentQuizData.questions[qIdx].options[optIdx].text = val;
+    }
+
+    function updateOptionScore(qIdx, optIdx, princessId, scoreVal) {
+      currentQuizData.questions[qIdx].options[optIdx].scores[princessId] = parseInt(scoreVal) || 1;
+    }
+
+    function removeOptionScore(qIdx, optIdx, princessId) {
+      delete currentQuizData.questions[qIdx].options[optIdx].scores[princessId];
+      renderQuestionsList();
+    }
+
+    function addScoreToOption(qIdx, optIdx, selectEl) {
+      const pId = selectEl.value;
+      if (!pId) return;
+      if (!currentQuizData.questions[qIdx].options[optIdx].scores) {
+        currentQuizData.questions[qIdx].options[optIdx].scores = {};
+      }
+      currentQuizData.questions[qIdx].options[optIdx].scores[pId] = 3;
+      renderQuestionsList();
+    }
+
+    function addOptionToQuestion(qIdx) {
+      const optKeys = Object.keys(currentQuizData.princesses);
+      const defaultP = optKeys.length > 0 ? optKeys[0] : 'cinderella';
+      const defScores = {};
+      defScores[defaultP] = 3;
+
+      currentQuizData.questions[qIdx].options.push({
+        text: 'Новый вариант ответа',
+        scores: defScores
+      });
+      renderQuestionsList();
+    }
+
+    function deleteOption(qIdx, optIdx) {
+      if (currentQuizData.questions[qIdx].options.length <= 1) {
+        alert('У вопроса должен быть хотя бы 1 вариант ответа!');
+        return;
+      }
+      currentQuizData.questions[qIdx].options.splice(optIdx, 1);
+      renderQuestionsList();
+    }
+
+    function addNewQuestion() {
+      const optKeys = Object.keys(currentQuizData.princesses);
+      const p1 = optKeys[0] || 'cinderella';
+      const p2 = optKeys[1] || p1;
+
+      currentQuizData.questions.push({
+        id: Date.now(),
+        question: 'Новый вопрос викторины',
+        subtitle: 'Выберите наиболее подходящий вариант',
+        options: [
+          { text: 'Первый вариант ответа', scores: { [p1]: 3 } },
+          { text: 'Второй вариант ответа', scores: { [p2]: 3 } }
+        ]
+      });
+      renderQuestionsList();
+      updateBadges();
+      showToast('Вопрос добавлен! ✨');
+      
+      // Скролл к новому вопросу
+      setTimeout(() => {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      }, 100);
+    }
+
+    function deleteQuestion(qIdx) {
+      if (currentQuizData.questions.length <= 1) {
+        alert('Нельзя удалить единственный вопрос!');
+        return;
+      }
+      if (confirm(`Точно удалить вопрос #${qIdx + 1}?`)) {
+        currentQuizData.questions.splice(qIdx, 1);
+        renderQuestionsList();
+        updateBadges();
+        showToast('Вопрос удален');
+      }
+    }
+
+    function moveQuestion(qIdx, direction) {
+      const targetIdx = qIdx + direction;
+      if (targetIdx < 0 || targetIdx >= currentQuizData.questions.length) return;
+      const temp = currentQuizData.questions[qIdx];
+      currentQuizData.questions[qIdx] = currentQuizData.questions[targetIdx];
+      currentQuizData.questions[targetIdx] = temp;
+      renderQuestionsList();
+    }
+
+    function cloneQuestion(qIdx) {
+      const cloned = JSON.parse(JSON.stringify(currentQuizData.questions[qIdx]));
+      cloned.id = Date.now();
+      cloned.question += ' (копия)';
+      currentQuizData.questions.splice(qIdx + 1, 0, cloned);
+      renderQuestionsList();
+      updateBadges();
+      showToast('Вопрос продублирован');
+    }
+
+    // Редактирование принцесс
+    function updatePrincessField(pId, field, val) {
+      if (currentQuizData.princesses[pId]) {
+        currentQuizData.princesses[pId][field] = val;
+      }
+    }
+
+    function updatePrincessTraits(pId, val) {
+      if (currentQuizData.princesses[pId]) {
+        currentQuizData.princesses[pId].traits = val.split(',').map(s => s.trim()).filter(Boolean);
+      }
+    }
+
+    function addNewPrincess() {
+      const id = 'princess_' + Date.now();
+      currentQuizData.princesses[id] = {
+        id: id,
+        name: 'Новый персонаж',
+        title: 'Титул персонажа',
+        emoji: '👑',
+        quote: '«Твоя вдохновляющая цитата»',
+        traits: ['Обаяние', 'Ум'],
+        description: 'Описание характера персонажа...'
+      };
+      renderPrincessesList();
+      updateBadges();
+      showToast('Персонаж добавлен!');
+    }
+
+    function deletePrincess(pId) {
+      if (Object.keys(currentQuizData.princesses).length <= 1) {
+        alert('В викторине должен быть хотя бы 1 персонаж!');
+        return;
+      }
+      if (confirm(`Удалить персонажа "${currentQuizData.princesses[pId].name}"?`)) {
+        delete currentQuizData.princesses[pId];
+        renderPrincessesList();
+        renderQuestionsList();
+        updateBadges();
+        showToast('Персонаж удален');
+      }
+    }
+
+    // Сохранение всех изменений
+    function saveAllChanges() {
+      const jsonStr = JSON.stringify(currentQuizData);
+      localStorage.setItem('custom_quiz_data', jsonStr);
+
+      // Пробуем также отправить на локальный сервер, если он запущен
+      fetch('/api/quiz', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: jsonStr
+      }).then(res => {
+        if (res.ok) {
+          showToast('✅ Успешно сохранено в браузере и на сервере!');
+        } else {
+          showToast('✅ Сохранено в браузере!');
+        }
+      }).catch(() => {
+        showToast('✅ Сохранено в браузере (LocalStorage)!');
+      });
+    }
+
+    // Скачивание JSON
+    function downloadJSON() {
+      saveAllChanges();
+      const blob = new Blob([JSON.stringify(currentQuizData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'questions.json';
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Файл questions.json скачан!');
+    }
+
+    // Импорт JSON
+    function importJSONFile(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (parsed.questions && parsed.princesses) {
+            currentQuizData = parsed;
+            saveAllChanges();
+            renderQuestionsList();
+            renderPrincessesList();
+            updateBadges();
+            showToast('✅ Данные успешно импортированы!');
+          } else {
+            alert('Неверный формат JSON! Должны присутствовать "questions" и "princesses".');
+          }
+        } catch(err) {
+          alert('Ошибка чтения файла: ' + err.message);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // Сброс к стандартным
+    function resetToDefaults() {
+      if (confirm('Сбросить все вопросы и персонажей к стандартным Disney? Все ваши изменения будут стерты.')) {
+        localStorage.removeItem('custom_quiz_data');
+        currentQuizData.princesses = JSON.parse(JSON.stringify(PRINCESSES));
+        currentQuizData.questions = JSON.parse(JSON.stringify(QUESTIONS));
+        renderQuestionsList();
+        renderPrincessesList();
+        updateBadges();
+        showToast('Данные сброшены к стандартным!');
+      }
+    }
+
+    // Вспомогательная функция
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      if (!toast) return;
+      toast.innerText = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2600);
+    }
+
+    document.addEventListener('DOMContentLoaded', initData);
+  </script>
+</body>
+</html>
