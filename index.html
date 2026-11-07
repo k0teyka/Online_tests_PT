@@ -71,6 +71,7 @@
           </div>
           <h2 id="question-text" class="question-text">Вопрос...</h2>
           <div id="question-subtext" class="question-subtext">Подзаголовок вопроса...</div>
+          <div id="question-image-box"></div>
         </div>
 
         <div id="options-list" class="options-list">
@@ -85,7 +86,9 @@
           
           <div class="result-avatar-wrap">
             <div class="result-avatar-glow"></div>
-            <div class="result-avatar" id="result-emoji">👑</div>
+            <div class="result-avatar" id="result-avatar-box">
+              <span id="result-emoji">👑</span>
+            </div>
           </div>
 
           <h2 class="result-name" id="result-name">Принцесса</h2>
@@ -117,7 +120,9 @@
   <!-- Всплывающее уведомление (Toast) -->
   <div id="toast" class="toast">Уведомление</div>
 
-  <!-- Скрипты -->
+  <!-- Supabase & Скрипты -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
   <script src="questions.js"></script>
   <script src="quiz.js"></script>
 </body>

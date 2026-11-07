@@ -349,6 +349,76 @@
       color: #fff;
     }
 
+    /* Стили загрузки изображений */
+    .img-upload-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 6px;
+      background: #0f172a;
+      border: 1px dashed #475569;
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+    }
+    .img-thumb-preview {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      object-fit: cover;
+      background: #1e293b;
+      border: 1px solid #475569;
+      flex-shrink: 0;
+    }
+    .img-upload-info {
+      flex: 1;
+      font-size: 12px;
+      color: #94a3b8;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .btn-file-select {
+      background: #334155;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      border: 1px solid #475569;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s;
+    }
+    .btn-file-select:hover {
+      background: #ec4899;
+      border-color: #ec4899;
+    }
+    .btn-del-img {
+      background: none;
+      border: none;
+      color: #ef4444;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px;
+      transition: color 0.2s;
+    }
+    .btn-del-img:hover {
+      color: #f87171;
+    }
+    .badge-connected {
+      background: rgba(16, 185, 129, 0.2) !important;
+      color: #34d399 !important;
+      border: 1px solid rgba(52, 211, 153, 0.4) !important;
+    }
+    .badge-disconnected {
+      background: rgba(239, 68, 68, 0.2) !important;
+      color: #f87171 !important;
+      border: 1px solid rgba(239, 68, 68, 0.4) !important;
+    }
+
     /* Модальное окно / пароль */
     .auth-overlay {
       position: fixed;
@@ -502,6 +572,40 @@
 
     <!-- ВКЛАДКА 3: Экспорт, импорт, сервер -->
     <section id="tab-settings" class="tab-content" style="display: none;">
+      <!-- Supabase Card -->
+      <div class="admin-card">
+        <div class="card-head">
+          <h2>
+            <span>⚡ Подключение к Supabase (Облако & Картинки)</span>
+            <span class="status-badge" id="supabase-status-badge">⚪ Проверка...</span>
+          </h2>
+        </div>
+        <p style="color: #cbd5e1; font-size: 13px; line-height: 1.5; margin-bottom: 16px;">
+          Подключите бесплатный проект <strong>Supabase</strong>, чтобы изменения теста и загруженные картинки мгновенно обновлялись у всех зрителей на сайте Vercel (без коммитов в GitHub).
+        </p>
+
+        <div class="form-group">
+          <label class="form-label">Project URL (Адрес проекта):</label>
+          <input type="text" id="supabase-url-input" class="form-control" placeholder="https://xyzcompany.supabase.co">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Anon Public Key (Публичный anon-ключ):</label>
+          <input type="text" id="supabase-key-input" class="form-control" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+        </div>
+
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button class="btn-top btn-view" onclick="testAndSaveSupabaseConnection()">
+            <span>🔌 Проверить и подключить Supabase</span>
+          </button>
+          <button class="btn-top" style="background: #334155; color: #cbd5e1;" onclick="disconnectSupabase()">
+            <span>Отключить</span>
+          </button>
+        </div>
+
+        <div id="supabase-msg-box" style="margin-top: 12px; font-size: 13px;"></div>
+      </div>
+
       <div class="admin-card">
         <div class="card-head">
           <h2>💾 Синхронизация данных & Экспорт</h2>
@@ -541,7 +645,9 @@
 
   <div id="toast" class="toast">Уведомление</div>
 
-  <!-- Базовые данные и логика админки -->
+  <!-- Supabase & Базовые скрипты -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
   <script src="questions.js"></script>
   <script>
     // Глобальное состояние редактируемых данных
@@ -575,13 +681,39 @@
     }
 
     // Инициализация данных
-    function initData() {
+    async function initData() {
       // 1. Проверяем сессию авторизации
       if (sessionStorage.getItem('admin_logged_in') === 'true') {
         document.getElementById('auth-modal').style.display = 'none';
       }
 
-      // 2. Пробуем загрузить отредактированные данные из localStorage
+      // 2. Инициализируем инпуты Supabase
+      const savedSbUrl = localStorage.getItem('supabase_url') || '';
+      const savedSbKey = localStorage.getItem('supabase_anon_key') || '';
+      const urlInp = document.getElementById('supabase-url-input');
+      const keyInp = document.getElementById('supabase-key-input');
+      if (urlInp) urlInp.value = savedSbUrl;
+      if (keyInp) keyInp.value = savedSbKey;
+      checkSupabaseStatus();
+
+      // 3. Пробуем загрузить свежие данные из Supabase (если подключен)
+      if (savedSbUrl && savedSbKey && typeof fetchQuizFromSupabase === 'function') {
+        try {
+          const sbData = await fetchQuizFromSupabase();
+          if (sbData && sbData.questions && sbData.princesses) {
+            currentQuizData = sbData;
+            localStorage.setItem('custom_quiz_data', JSON.stringify(sbData));
+            renderQuestionsList();
+            renderPrincessesList();
+            updateBadges();
+            return;
+          }
+        } catch (e) {
+          console.warn('Ошибка загрузки из Supabase при старте админки:', e);
+        }
+      }
+
+      // 4. Пробуем загрузить отредактированные данные из localStorage
       const localData = localStorage.getItem('custom_quiz_data');
       if (localData) {
         try {
@@ -595,7 +727,7 @@
         } catch(e) {}
       }
 
-      // 3. Если нет в LocalStorage, пробуем подгрузить с сервера или из questions.json
+      // 5. Если нет в LocalStorage, пробуем подгрузить с сервера или из questions.json
       fetch('/api/quiz')
         .then(r => r.ok ? r.json() : fetch('questions.json').then(r2 => r2.ok ? r2.json() : null))
         .then(data => {
@@ -616,6 +748,107 @@
           renderPrincessesList();
           updateBadges();
         });
+    }
+
+    function checkSupabaseStatus() {
+      const url = localStorage.getItem('supabase_url');
+      const key = localStorage.getItem('supabase_anon_key');
+      updateSupabaseBadge(!!(url && key));
+    }
+
+    function updateSupabaseBadge(isConnected) {
+      const badge = document.getElementById('supabase-status-badge');
+      const globalBadge = document.getElementById('storage-status-badge');
+      if (!badge) return;
+      if (isConnected) {
+        badge.className = 'status-badge badge-connected';
+        badge.innerText = '🟢 Supabase подключен';
+        if (globalBadge) {
+          globalBadge.className = 'status-badge badge-connected';
+          globalBadge.innerText = '☁️ Облако Supabase';
+        }
+      } else {
+        badge.className = 'status-badge badge-disconnected';
+        badge.innerText = '⚪ Локальный режим (без облака)';
+        if (globalBadge) {
+          globalBadge.className = 'status-badge';
+          globalBadge.innerText = '● Локальное сохранение';
+        }
+      }
+    }
+
+    async function testAndSaveSupabaseConnection() {
+      const url = document.getElementById('supabase-url-input').value.trim();
+      const key = document.getElementById('supabase-key-input').value.trim();
+
+      if (!url || !key) {
+        alert('Пожалуйста, заполните оба поля: Project URL и Anon Key!');
+        return;
+      }
+
+      showToast('⏳ Проверка соединения с Supabase...');
+      localStorage.setItem('supabase_url', url);
+      localStorage.setItem('supabase_anon_key', key);
+      window.SUPABASE_CONFIG.url = url;
+      window.SUPABASE_CONFIG.anonKey = key;
+      _supabaseClient = null;
+
+      const client = getSupabase();
+      if (!client) {
+        alert('Не удалось создать клиент Supabase. Проверьте правильность URL!');
+        return;
+      }
+
+      try {
+        const { error } = await client.from('quiz_state').select('id').limit(1);
+
+        if (error) {
+          if (error.code === '42P01') {
+            document.getElementById('supabase-msg-box').innerHTML = `
+              <div style="color: #f59e0b; padding: 12px; background: rgba(245, 158, 11, 0.15); border-radius: 8px; border: 1px solid rgba(245, 158, 11, 0.3);">
+                ⚠️ <strong>Ключ подошел, но таблица не создана!</strong><br>
+                Откройте в панели Supabase раздел <strong>SQL Editor</strong> и выполните скрипт создания таблицы <code>quiz_state</code> (инструкция в README).
+              </div>
+            `;
+            updateSupabaseBadge(false);
+            return;
+          }
+          throw error;
+        }
+
+        // Сохраняем текущие данные квиза в Supabase
+        await saveQuizToSupabase(currentQuizData);
+        updateSupabaseBadge(true);
+        document.getElementById('supabase-msg-box').innerHTML = `
+          <div style="color: #10b981; padding: 12px; background: rgba(16, 185, 129, 0.15); border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.3);">
+            ✅ <strong>Supabase успешно подключен!</strong><br>
+            Вопросы и картинки теперь сохраняются прямо в облако и мгновенно доступны всем зрителям на Vercel.
+          </div>
+        `;
+        showToast('✨ Supabase успешно подключен!');
+      } catch (err) {
+        document.getElementById('supabase-msg-box').innerHTML = `
+          <div style="color: #f87171; padding: 12px; background: rgba(239, 68, 68, 0.15); border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.3);">
+            ❌ Ошибка подключения: ${escapeHtml(err.message || err.error_description || String(err))}
+          </div>
+        `;
+        updateSupabaseBadge(false);
+      }
+    }
+
+    function disconnectSupabase() {
+      if (confirm('Отключить Supabase? Вопросы снова будут сохраняться только в локальной памяти браузера.')) {
+        localStorage.removeItem('supabase_url');
+        localStorage.removeItem('supabase_anon_key');
+        window.SUPABASE_CONFIG.url = '';
+        window.SUPABASE_CONFIG.anonKey = '';
+        _supabaseClient = null;
+        document.getElementById('supabase-url-input').value = '';
+        document.getElementById('supabase-key-input').value = '';
+        document.getElementById('supabase-msg-box').innerHTML = '';
+        updateSupabaseBadge(false);
+        showToast('Supabase отключен');
+      }
     }
 
     function updateBadges() {
@@ -710,6 +943,25 @@
               onchange="updateQuestionField(${qIdx}, 'subtitle', this.value)">
           </div>
 
+          <div class="form-group">
+            <label class="form-label">Иллюстрация к вопросу (необязательно):</label>
+            ${q.imageUrl ? `
+              <div class="img-upload-wrap">
+                <img src="${q.imageUrl}" class="img-thumb-preview" alt="Иллюстрация">
+                <div class="img-upload-info">Иллюстрация прикреплена</div>
+                <button class="btn-del-img" title="Удалить фото" onclick="removeQuestionImage(${qIdx})">✕ Удалить</button>
+              </div>
+            ` : `
+              <div class="img-upload-wrap">
+                <div class="img-upload-info">📷 Нет изображения</div>
+                <label class="btn-file-select">
+                  <span>Выбрать картинку</span>
+                  <input type="file" accept="image/*" style="display:none;" onchange="handleQuestionImageUpload(event, ${qIdx})">
+                </label>
+              </div>
+            `}
+          </div>
+
           <div class="options-editor">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
               <span class="form-label" style="margin: 0;">Варианты ответов:</span>
@@ -748,6 +1000,25 @@
                 onchange="updatePrincessField('${pId}', 'title', this.value)">
             </div>
             <button class="btn-icon delete" title="Удалить персонажа" onclick="deletePrincess('${pId}')">🗑️</button>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 8px;">
+            <label class="form-label" style="font-size: 11px;">Фотография / Портрет персонажа:</label>
+            ${p.imageUrl ? `
+              <div class="img-upload-wrap">
+                <img src="${p.imageUrl}" class="img-thumb-preview" alt="${escapeHtml(p.name)}">
+                <div class="img-upload-info">Фото загружено</div>
+                <button class="btn-del-img" title="Удалить фото" onclick="removePrincessImage('${pId}')">✕ Удалить</button>
+              </div>
+            ` : `
+              <div class="img-upload-wrap">
+                <div class="img-upload-info">📷 Нет фото (будет показан эмодзи)</div>
+                <label class="btn-file-select">
+                  <span>Загрузить фото</span>
+                  <input type="file" accept="image/*" style="display:none;" onchange="handlePrincessImageUpload(event, '${pId}')">
+                </label>
+              </div>
+            `}
           </div>
 
           <div class="form-group" style="margin-bottom: 8px;">
@@ -924,19 +1195,81 @@
       }
     }
 
+    // Обработчики загрузки изображений
+    async function handlePrincessImageUpload(event, pId) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      showToast('⏳ Загрузка фото принцессы...');
+      try {
+        const res = await uploadImageToSupabase(file, `princess_${pId}`);
+        currentQuizData.princesses[pId].imageUrl = res.publicUrl;
+        renderPrincessesList();
+        await saveAllChanges();
+        showToast(res.isLocal ? '✨ Фото сохранено локально' : '☁️ Фото загружено в Supabase Storage!');
+      } catch (err) {
+        alert('Ошибка при загрузке изображения: ' + (err.message || err));
+      }
+    }
+
+    async function removePrincessImage(pId) {
+      delete currentQuizData.princesses[pId].imageUrl;
+      renderPrincessesList();
+      await saveAllChanges();
+      showToast('Фото удалено');
+    }
+
+    async function handleQuestionImageUpload(event, qIdx) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      showToast('⏳ Загрузка иллюстрации...');
+      try {
+        const res = await uploadImageToSupabase(file, `question_${qIdx}`);
+        currentQuizData.questions[qIdx].imageUrl = res.publicUrl;
+        renderQuestionsList();
+        await saveAllChanges();
+        showToast(res.isLocal ? '✨ Иллюстрация сохранена' : '☁️ Иллюстрация в Supabase Storage!');
+      } catch (err) {
+        alert('Ошибка при загрузке иллюстрации: ' + (err.message || err));
+      }
+    }
+
+    async function removeQuestionImage(qIdx) {
+      delete currentQuizData.questions[qIdx].imageUrl;
+      renderQuestionsList();
+      await saveAllChanges();
+      showToast('Иллюстрация удалена');
+    }
+
     // Сохранение всех изменений
-    function saveAllChanges() {
+    async function saveAllChanges() {
       const jsonStr = JSON.stringify(currentQuizData);
       localStorage.setItem('custom_quiz_data', jsonStr);
 
-      // Пробуем также отправить на локальный сервер, если он запущен
+      // 1. Пробуем сохранить в Supabase (если подключен)
+      const sbUrl = localStorage.getItem('supabase_url');
+      const sbKey = localStorage.getItem('supabase_anon_key');
+      if (sbUrl && sbKey && typeof saveQuizToSupabase === 'function') {
+        try {
+          const res = await saveQuizToSupabase(currentQuizData);
+          if (res.success) {
+            showToast('☁️ Сохранено в облаке Supabase (доступно зрителям)!');
+            return;
+          }
+        } catch (e) {
+          console.warn('Ошибка отправки в Supabase:', e);
+        }
+      }
+
+      // 2. Пробуем также отправить на локальный сервер, если он запущен
       fetch('/api/quiz', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: jsonStr
       }).then(res => {
         if (res.ok) {
-          showToast('✅ Успешно сохранено в браузере и на сервере!');
+          showToast('✅ Успешно сохранено на сервере!');
         } else {
           showToast('✅ Сохранено в браузере!');
         }

@@ -6,8 +6,24 @@ let currentQuestionIndex = 0;
 let scores = {};
 
 // Загрузка кастомных или серверных данных викторины
-function loadQuizData() {
-  // 1. Проверяем LocalStorage (из админки)
+async function loadQuizData() {
+  // 1. Пробуем загрузить свежие данные из Supabase (если подключен)
+  if (typeof fetchQuizFromSupabase === 'function') {
+    try {
+      const remoteData = await fetchQuizFromSupabase();
+      if (remoteData && remoteData.questions && remoteData.princesses) {
+        activePrincesses = remoteData.princesses;
+        activeQuestions = remoteData.questions;
+        localStorage.setItem('custom_quiz_data', JSON.stringify(remoteData));
+        updateDynamicCounts();
+        return;
+      }
+    } catch (e) {
+      console.warn('Supabase fetch failed, fallback to local/cache:', e);
+    }
+  }
+
+  // 2. Проверяем LocalStorage (кэш или данные из админки)
   const local = localStorage.getItem('custom_quiz_data');
   if (local) {
     try {
@@ -23,7 +39,7 @@ function loadQuizData() {
     }
   }
 
-  // 2. Если в LocalStorage нет, пробуем подтянуть questions.json (если выложен на хостинг)
+  // 3. Если в LocalStorage нет, пробуем подтянуть questions.json (если выложен на хостинг)
   fetch('questions.json')
     .then(r => r.ok ? r.json() : null)
     .then(data => {
@@ -86,6 +102,16 @@ function renderQuestion() {
   // Текст вопроса
   document.getElementById('question-text').innerText = q.question;
   document.getElementById('question-subtext').innerText = q.subtitle || '';
+
+  // Картинка к вопросу (если загружена)
+  const imgBox = document.getElementById('question-image-box');
+  if (imgBox) {
+    if (q.imageUrl) {
+      imgBox.innerHTML = `<div class="question-image-wrap"><img src="${q.imageUrl}" class="question-img" alt="Иллюстрация к вопросу"></div>`;
+    } else {
+      imgBox.innerHTML = '';
+    }
+  }
 
   // Опции
   const optionsContainer = document.getElementById('options-list');
@@ -154,7 +180,15 @@ function finishQuiz() {
 function renderResult(princess) {
   if (!princess) return;
 
-  document.getElementById('result-emoji').innerText = princess.emoji || '👑';
+  const avatarBox = document.getElementById('result-avatar-box');
+  if (avatarBox) {
+    if (princess.imageUrl) {
+      avatarBox.innerHTML = `<img src="${princess.imageUrl}" alt="${princess.name}">`;
+    } else {
+      avatarBox.innerHTML = `<span id="result-emoji">${princess.emoji || '👑'}</span>`;
+    }
+  }
+
   document.getElementById('result-name').innerText = princess.name || 'Принцесса';
   document.getElementById('result-title').innerText = princess.title || '';
   document.getElementById('result-quote').innerText = princess.quote || '';
