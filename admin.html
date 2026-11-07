@@ -585,8 +585,8 @@
         </p>
 
         <div class="form-group">
-          <label class="form-label">Project URL (Адрес проекта):</label>
-          <input type="text" id="supabase-url-input" class="form-control" placeholder="https://xyzcompany.supabase.co">
+          <label class="form-label">Project URL (Адрес проекта): <small style="color: #94a3b8; font-weight: normal;">(без /rest/v1/)</small></label>
+          <input type="text" id="supabase-url-input" class="form-control" placeholder="https://qtsqwmugavrssaauhnul.supabase.co">
         </div>
 
         <div class="form-group">
@@ -778,8 +778,12 @@
     }
 
     async function testAndSaveSupabaseConnection() {
-      const url = document.getElementById('supabase-url-input').value.trim();
+      let url = document.getElementById('supabase-url-input').value.trim();
       const key = document.getElementById('supabase-key-input').value.trim();
+
+      // Автоматически отрезаем /rest/v1/, если пользователь скопировал REST URL
+      url = url.replace(/\/rest\/v1\/?$/i, '').replace(/\/auth\/v1\/?$/i, '').replace(/\/storage\/v1\/?$/i, '').replace(/\/+$/, '');
+      document.getElementById('supabase-url-input').value = url;
 
       if (!url || !key) {
         alert('Пожалуйста, заполните оба поля: Project URL и Anon Key!');

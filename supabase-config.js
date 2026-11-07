@@ -5,10 +5,20 @@
  * 2. Загружать картинки в Supabase Storage (бакет quiz-assets)
  */
 
+function normalizeSupabaseUrl(rawUrl) {
+  if (!rawUrl) return '';
+  return String(rawUrl)
+    .trim()
+    .replace(/\/rest\/v1\/?$/i, '')
+    .replace(/\/auth\/v1\/?$/i, '')
+    .replace(/\/storage\/v1\/?$/i, '')
+    .replace(/\/+$/, '');
+}
+
 window.SUPABASE_CONFIG = {
   // Можно прописать URL и ключ прямо здесь, либо ввести в admin.html на вкладке Настройки
-  url: localStorage.getItem('supabase_url') || '',
-  anonKey: localStorage.getItem('supabase_anon_key') || '',
+  url: normalizeSupabaseUrl(localStorage.getItem('supabase_url') || ''),
+  anonKey: (localStorage.getItem('supabase_anon_key') || '').trim(),
   bucketName: 'quiz-assets',
   tableName: 'quiz_state'
 };
@@ -18,8 +28,9 @@ let _supabaseClient = null;
 function getSupabase() {
   if (_supabaseClient) return _supabaseClient;
 
-  const url = window.SUPABASE_CONFIG.url || localStorage.getItem('supabase_url');
-  const key = window.SUPABASE_CONFIG.anonKey || localStorage.getItem('supabase_anon_key');
+  const rawUrl = window.SUPABASE_CONFIG.url || localStorage.getItem('supabase_url');
+  const url = normalizeSupabaseUrl(rawUrl);
+  const key = (window.SUPABASE_CONFIG.anonKey || localStorage.getItem('supabase_anon_key') || '').trim();
 
   if (url && key && window.supabase && typeof window.supabase.createClient === 'function') {
     try {
