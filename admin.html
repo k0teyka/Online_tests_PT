@@ -523,6 +523,7 @@
     <div class="tabs-bar">
       <button class="tab-btn active" onclick="switchTab('tab-questions', this)">📋 Вопросы (<span id="questions-count-badge">7</span>)</button>
       <button class="tab-btn" onclick="switchTab('tab-princesses', this)">👑 Персонажи / Принцессы (<span id="princesses-count-badge">8</span>)</button>
+      <button class="tab-btn" onclick="switchTab('tab-projector', this)">📽️ Управление проектором</button>
       <button class="tab-btn" onclick="switchTab('tab-settings', this)">⚙️ Экспорт / Импорт & Настройки</button>
     </div>
 
@@ -570,7 +571,121 @@
       </div>
     </section>
 
-    <!-- ВКЛАДКА 3: Экспорт, импорт, сервер -->
+    <!-- ВКЛАДКА 3: Управление проектором -->
+    <section id="tab-projector" class="tab-content" style="display: none;">
+      <!-- Карточка таймера -->
+      <div class="admin-card">
+        <div class="card-head">
+          <h2>⏱️ Таймер обратного отсчета на проекторе</h2>
+          <a href="projector.html" target="_blank" class="btn-top btn-projector">
+            <span>📽️ Открыть экран проектора ↗</span>
+          </a>
+        </div>
+        <p style="color: #94a3b8; font-size: 13px; margin-bottom: 16px;">
+          Управляйте появлением и ходом таймера перед спектаклем. Изменения сразу отображаются на большом экране.
+        </p>
+
+        <div class="form-group" style="background: #0f172a; padding: 14px 18px; border-radius: var(--radius-sm); border: 1px solid #334155;">
+          <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 15px; font-weight: 700; color: #fde68a;">
+            <input type="checkbox" id="proj-show-timer" style="width: 20px; height: 20px; accent-color: #ec4899;" onchange="updateProjectorSetting('showTimer', this.checked)">
+            <span>Отображать таймер обратного отсчета на экране проектора</span>
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Подпись над таймером:</label>
+          <input type="text" id="proj-timer-label" class="form-control" placeholder="До третьего звонка осталось" onchange="updateProjectorSetting('timerLabel', this.value)">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Быстрый запуск таймера на время:</label>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
+            <button class="btn-top" style="background: #334155; color: #fff;" onclick="setProjectorMinutes(15)">15 минут</button>
+            <button class="btn-top" style="background: #334155; color: #fff;" onclick="setProjectorMinutes(10)">10 минут</button>
+            <button class="btn-top" style="background: #ec4899; color: #fff; font-weight: 700;" onclick="setProjectorMinutes(7)">7 минут</button>
+            <button class="btn-top" style="background: #334155; color: #fff;" onclick="setProjectorMinutes(5)">5 минут</button>
+            <button class="btn-top" style="background: #334155; color: #fff;" onclick="setProjectorMinutes(3)">3 минуты</button>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <input type="number" min="1" max="180" id="proj-timer-minutes" class="form-control" style="width: 90px;" placeholder="7" onchange="setProjectorMinutes(parseInt(this.value)||7)">
+              <span style="font-size: 13px; color: #94a3b8;">мин</span>
+            </div>
+            <button class="btn-top" id="proj-btn-toggle-timer" style="background: #f59e0b; color: #000; font-weight: 700;" onclick="toggleProjectorTimerState()">
+              <span>⏸ Пауза</span>
+            </button>
+            <button class="btn-top" style="background: #475569; color: #fff;" onclick="resetProjectorTimer()">
+              <span>🔄 Сброс к началу</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Карточка текстов -->
+      <div class="admin-card">
+        <div class="card-head">
+          <h2>✍️ Тексты и заголовки на экране проектора</h2>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Верхняя плашка (Бейдж над заголовком):</label>
+          <input type="text" id="proj-badge-text" class="form-control" placeholder="✨ Интерактив для зрителей" onchange="updateProjectorSetting('badgeText', this.value)">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Главный заголовок спектакля / теста:</label>
+          <input type="text" id="proj-main-title" class="form-control" placeholder="Какая ты принцесса Disney?" onchange="updateProjectorSetting('mainTitle', this.value)">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Подзаголовок:</label>
+          <input type="text" id="proj-subtitle" class="form-control" placeholder="Успей пройти быстрый тест до начала спектакля!" onchange="updateProjectorSetting('subtitle', this.value)">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Текст под QR-кодом:</label>
+          <input type="text" id="proj-qr-callout" class="form-control" placeholder="📸 Наведи камеру телефона" onchange="updateProjectorSetting('qrCallout', this.value)">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Ссылка для QR-кода (необязательно, если пусто — определяется автоматически):</label>
+          <input type="text" id="proj-custom-url" class="form-control" placeholder="Например: https://princess-tests.pages.dev" onchange="updateProjectorSetting('customUrl', this.value)">
+        </div>
+      </div>
+
+      <!-- Карточка 3 шагов инструкции -->
+      <div class="admin-card">
+        <div class="card-head">
+          <h2>📋 Шаги инструкции для зрителей (справа от QR)</h2>
+        </div>
+
+        <div class="form-group" style="background: #0f172a; padding: 12px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #334155;">
+          <label class="form-label" style="color: #ec4899; font-weight: 700;">Шаг 1:</label>
+          <input type="text" id="proj-step1-title" class="form-control" style="margin-bottom: 6px; font-weight: 600;" placeholder="Открой камеру телефона" onchange="updateProjectorSetting('step1Title', this.value)">
+          <input type="text" id="proj-step1-desc" class="form-control" style="font-size: 12px; color: #94a3b8;" placeholder="QR-код считывается обычной камерой без доп. приложений" onchange="updateProjectorSetting('step1Desc', this.value)">
+        </div>
+
+        <div class="form-group" style="background: #0f172a; padding: 12px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #334155;">
+          <label class="form-label" style="color: #ec4899; font-weight: 700;">Шаг 2:</label>
+          <input type="text" id="proj-step2-title" class="form-control" style="margin-bottom: 6px; font-weight: 600;" placeholder="Ответь на 7 вопросов" onchange="updateProjectorSetting('step2Title', this.value)">
+          <input type="text" id="proj-step2-desc" class="form-control" style="font-size: 12px; color: #94a3b8;" placeholder="Тест занимает ровно 1 минуту" onchange="updateProjectorSetting('step2Desc', this.value)">
+        </div>
+
+        <div class="form-group" style="background: #0f172a; padding: 12px; border-radius: 8px; border: 1px solid #334155;">
+          <label class="form-label" style="color: #ec4899; font-weight: 700;">Шаг 3:</label>
+          <input type="text" id="proj-step3-title" class="form-control" style="margin-bottom: 6px; font-weight: 600;" placeholder="Узнай свою принцессу" onchange="updateProjectorSetting('step3Title', this.value)">
+          <input type="text" id="proj-step3-desc" class="form-control" style="font-size: 12px; color: #94a3b8;" placeholder="Покажи свой результат друзьям и соседям по залу!" onchange="updateProjectorSetting('step3Desc', this.value)">
+        </div>
+
+        <div style="margin-top: 18px;">
+          <button class="btn-top btn-save-all" onclick="saveAllChanges()">
+            <span>💾 Сохранить и применить на проекторе</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ВКЛАДКА 4: Экспорт, импорт, сервер -->
     <section id="tab-settings" class="tab-content" style="display: none;">
       <!-- Supabase Card -->
       <div class="admin-card">
@@ -650,11 +765,80 @@
   <script src="supabase-config.js"></script>
   <script src="questions.js"></script>
   <script>
-    // Глобальное состояние редактируемых данных
+    function getDefaultProjectorSettings() {
+      return {
+        showTimer: true,
+        timerMinutes: 7,
+        timerIsRunning: true,
+        timerTargetTimestamp: Date.now() + 7 * 60 * 1000,
+        timerRemainingSeconds: 7 * 60,
+        timerLabel: 'До третьего звонка осталось',
+        badgeText: '✨ Интерактив для зрителей',
+        mainTitle: 'Какая ты принцесса Disney?',
+        subtitle: 'Успей пройти быстрый тест до начала спектакля!',
+        qrCallout: '📸 Наведи камеру телефона',
+        customUrl: '',
+        step1Title: 'Открой камеру телефона',
+        step1Desc: 'QR-код считывается обычной камерой без доп. приложений',
+        step2Title: 'Ответь на 7 вопросов',
+        step2Desc: 'Тест занимает ровно 1 минуту',
+        step3Title: 'Узнай свою принцессу',
+        step3Desc: 'Покажи свой результат друзьям и соседям по залу!'
+      };
+    }
+
+    // Глобальное состояние редактируемых данных (сразу инициализируем дефолтами из questions.js)
     let currentQuizData = {
-      princesses: {},
-      questions: []
+      princesses: (typeof PRINCESSES !== 'undefined' && Object.keys(PRINCESSES).length > 0) ? JSON.parse(JSON.stringify(PRINCESSES)) : {},
+      questions: (typeof QUESTIONS !== 'undefined' && QUESTIONS.length > 0) ? JSON.parse(JSON.stringify(QUESTIONS)) : [],
+      projector: getDefaultProjectorSettings()
     };
+
+    // Надежный помощник для получения списка принцесс (гарантирует непустой список)
+    function getPrincessList() {
+      let p = currentQuizData.princesses;
+
+      // Если объект пустой или отсутствует — восстанавливаем из PRINCESSES
+      if (!p || (typeof p === 'object' && Object.keys(p).length === 0)) {
+        if (typeof PRINCESSES !== 'undefined' && Object.keys(PRINCESSES).length > 0) {
+          currentQuizData.princesses = JSON.parse(JSON.stringify(PRINCESSES));
+          p = currentQuizData.princesses;
+        }
+      }
+
+      // Если это массив — преобразуем в объект по id
+      if (Array.isArray(p)) {
+        const obj = {};
+        p.forEach((item, idx) => {
+          const id = item.id || ('p_' + idx);
+          obj[id] = item;
+        });
+        currentQuizData.princesses = obj;
+        p = obj;
+      }
+
+      const list = [];
+      for (let key in p) {
+        if (p.hasOwnProperty(key) && p[key]) {
+          list.push({
+            id: p[key].id || key,
+            name: p[key].name || key,
+            emoji: p[key].emoji || '👑',
+            data: p[key]
+          });
+        }
+      }
+
+      // Аварийный fallback если все еще пусто
+      if (list.length === 0 && typeof PRINCESSES !== 'undefined') {
+        currentQuizData.princesses = JSON.parse(JSON.stringify(PRINCESSES));
+        for (let k in PRINCESSES) {
+          list.push({ id: k, name: PRINCESSES[k].name, emoji: PRINCESSES[k].emoji || '👑', data: PRINCESSES[k] });
+        }
+      }
+
+      return list;
+    }
 
     // Проверка авторизации
     function checkAdminAuth() {
@@ -700,11 +884,20 @@
       if (savedSbUrl && savedSbKey && typeof fetchQuizFromSupabase === 'function') {
         try {
           const sbData = await fetchQuizFromSupabase();
-          if (sbData && sbData.questions && sbData.princesses) {
-            currentQuizData = sbData;
-            localStorage.setItem('custom_quiz_data', JSON.stringify(sbData));
+          if (sbData && (sbData.questions || sbData.princesses)) {
+            if (sbData.princesses && Object.keys(sbData.princesses).length > 0) {
+              currentQuizData.princesses = sbData.princesses;
+            }
+            if (sbData.questions && sbData.questions.length > 0) {
+              currentQuizData.questions = sbData.questions;
+            }
+            if (sbData.projector) {
+              currentQuizData.projector = sbData.projector;
+            }
+            localStorage.setItem('custom_quiz_data', JSON.stringify(currentQuizData));
             renderQuestionsList();
             renderPrincessesList();
+            renderProjectorSettings();
             updateBadges();
             return;
           }
@@ -718,10 +911,18 @@
       if (localData) {
         try {
           const parsed = JSON.parse(localData);
-          currentQuizData.princesses = parsed.princesses || PRINCESSES;
-          currentQuizData.questions = parsed.questions || QUESTIONS;
+          if (parsed.princesses && Object.keys(parsed.princesses).length > 0) {
+            currentQuizData.princesses = parsed.princesses;
+          }
+          if (parsed.questions && parsed.questions.length > 0) {
+            currentQuizData.questions = parsed.questions;
+          }
+          if (parsed.projector) {
+            currentQuizData.projector = parsed.projector;
+          }
           renderQuestionsList();
           renderPrincessesList();
+          renderProjectorSettings();
           updateBadges();
           return;
         } catch(e) {}
@@ -731,21 +932,20 @@
       fetch('/api/quiz')
         .then(r => r.ok ? r.json() : fetch('questions.json').then(r2 => r2.ok ? r2.json() : null))
         .then(data => {
-          if (data && data.questions && data.princesses) {
-            currentQuizData = data;
-          } else {
-            currentQuizData.princesses = JSON.parse(JSON.stringify(PRINCESSES));
-            currentQuizData.questions = JSON.parse(JSON.stringify(QUESTIONS));
+          if (data && (data.questions || data.princesses)) {
+            if (data.princesses && Object.keys(data.princesses).length > 0) currentQuizData.princesses = data.princesses;
+            if (data.questions && data.questions.length > 0) currentQuizData.questions = data.questions;
+            if (data.projector) currentQuizData.projector = data.projector;
           }
           renderQuestionsList();
           renderPrincessesList();
+          renderProjectorSettings();
           updateBadges();
         })
         .catch(() => {
-          currentQuizData.princesses = JSON.parse(JSON.stringify(PRINCESSES));
-          currentQuizData.questions = JSON.parse(JSON.stringify(QUESTIONS));
           renderQuestionsList();
           renderPrincessesList();
+          renderProjectorSettings();
           updateBadges();
         });
     }
@@ -857,29 +1057,116 @@
 
     function updateBadges() {
       document.getElementById('questions-count-badge').innerText = currentQuizData.questions.length;
-      document.getElementById('princesses-count-badge').innerText = Object.keys(currentQuizData.princesses).length;
+      document.getElementById('princesses-count-badge').innerText = getPrincessList().length;
     }
 
     // Переключение вкладок
     function switchTab(tabId, btn) {
       document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
       document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-      document.getElementById(tabId).style.display = 'block';
-      btn.classList.add('active');
+      const target = document.getElementById(tabId);
+      if (target) target.style.display = 'block';
+      if (btn) btn.classList.add('active');
+      if (tabId === 'tab-projector') {
+        renderProjectorSettings();
+      }
     }
 
-    // Рендер вопросов
+    // Управление настройками проектора
+    function renderProjectorSettings() {
+      if (!currentQuizData.projector) {
+        currentQuizData.projector = getDefaultProjectorSettings();
+      }
+      const pr = currentQuizData.projector;
+
+      const showTimerEl = document.getElementById('proj-show-timer');
+      if (showTimerEl) showTimerEl.checked = pr.showTimer !== false;
+
+      setInputValue('proj-timer-label', pr.timerLabel || 'До третьего звонка осталось');
+      setInputValue('proj-timer-minutes', pr.timerMinutes || 7);
+
+      const btnToggle = document.getElementById('proj-btn-toggle-timer');
+      if (btnToggle) {
+        btnToggle.innerHTML = pr.timerIsRunning !== false ? '<span>⏸ Пауза</span>' : '<span>▶ Запустить</span>';
+      }
+
+      setInputValue('proj-badge-text', pr.badgeText || '✨ Интерактив для зрителей');
+      setInputValue('proj-main-title', pr.mainTitle || 'Какая ты принцесса Disney?');
+      setInputValue('proj-subtitle', pr.subtitle || 'Успей пройти быстрый тест до начала спектакля!');
+      setInputValue('proj-qr-callout', pr.qrCallout || '📸 Наведи камеру телефона');
+      setInputValue('proj-custom-url', pr.customUrl || '');
+
+      setInputValue('proj-step1-title', pr.step1Title || 'Открой камеру телефона');
+      setInputValue('proj-step1-desc', pr.step1Desc || 'QR-код считывается обычной камерой без доп. приложений');
+      setInputValue('proj-step2-title', pr.step2Title || 'Ответь на 7 вопросов');
+      setInputValue('proj-step2-desc', pr.step2Desc || 'Тест занимает ровно 1 минуту');
+      setInputValue('proj-step3-title', pr.step3Title || 'Узнай свою принцессу');
+      setInputValue('proj-step3-desc', pr.step3Desc || 'Покажи свой результат друзьям и соседям по залу!');
+    }
+
+    function setInputValue(id, val) {
+      const el = document.getElementById(id);
+      if (el) el.value = val;
+    }
+
+    function updateProjectorSetting(key, val) {
+      if (!currentQuizData.projector) currentQuizData.projector = getDefaultProjectorSettings();
+      currentQuizData.projector[key] = val;
+      saveAllChanges();
+    }
+
+    function setProjectorMinutes(min) {
+      if (!currentQuizData.projector) currentQuizData.projector = getDefaultProjectorSettings();
+      currentQuizData.projector.timerMinutes = min;
+      currentQuizData.projector.timerTargetTimestamp = Date.now() + min * 60 * 1000;
+      currentQuizData.projector.timerRemainingSeconds = min * 60;
+      currentQuizData.projector.timerIsRunning = true;
+      renderProjectorSettings();
+      saveAllChanges();
+      showToast(`Таймер установлен на ${min} мин и запущен!`);
+    }
+
+    function toggleProjectorTimerState() {
+      if (!currentQuizData.projector) currentQuizData.projector = getDefaultProjectorSettings();
+      const pr = currentQuizData.projector;
+      if (pr.timerIsRunning !== false) {
+        const remaining = Math.max(0, Math.floor(((pr.timerTargetTimestamp || Date.now()) - Date.now()) / 1000));
+        pr.timerRemainingSeconds = remaining;
+        pr.timerIsRunning = false;
+        showToast('⏸ Таймер на проекторе на паузе');
+      } else {
+        const sec = pr.timerRemainingSeconds || (pr.timerMinutes || 7) * 60;
+        pr.timerTargetTimestamp = Date.now() + sec * 1000;
+        pr.timerIsRunning = true;
+        showToast('▶ Таймер запущен!');
+      }
+      renderProjectorSettings();
+      saveAllChanges();
+    }
+
+    function resetProjectorTimer() {
+      if (!currentQuizData.projector) currentQuizData.projector = getDefaultProjectorSettings();
+      const min = currentQuizData.projector.timerMinutes || 7;
+      currentQuizData.projector.timerTargetTimestamp = Date.now() + min * 60 * 1000;
+      currentQuizData.projector.timerRemainingSeconds = min * 60;
+      currentQuizData.projector.timerIsRunning = true;
+      renderProjectorSettings();
+      saveAllChanges();
+      showToast('Таймер сброшен к ' + min + ' мин');
+    }
+
+    // Рендер вопросов с исправленным и надежным списком принцесс
     function renderQuestionsList() {
       const container = document.getElementById('questions-list-container');
       container.innerHTML = '';
+
+      // Получаем гарантированный список принцесс
+      const princessList = getPrincessList();
 
       currentQuizData.questions.forEach((q, qIdx) => {
         const qBlock = document.createElement('div');
         qBlock.className = 'question-block';
         qBlock.id = `q-block-${qIdx}`;
-
-        // Список принцесс для селекта очков
-        const princessKeys = Object.keys(currentQuizData.princesses);
 
         let optionsHtml = '';
         (q.options || []).forEach((opt, optIdx) => {
@@ -887,20 +1174,21 @@
           
           let scoresChipsHtml = '';
           for (let pId in (opt.scores || {})) {
-            const pName = currentQuizData.princesses[pId] ? currentQuizData.princesses[pId].name : pId;
+            const foundP = princessList.find(p => p.id === pId) || (currentQuizData.princesses && currentQuizData.princesses[pId]);
+            const pName = foundP ? foundP.name : pId;
             scoresChipsHtml += `
               <span class="score-chip">
-                <span>${pName}:</span>
+                <span>${escapeHtml(pName)}:</span>
                 <input type="number" min="1" max="10" value="${opt.scores[pId]}" 
                   onchange="updateOptionScore(${qIdx}, ${optIdx}, '${pId}', this.value)" style="width: 36px;">
-                <button onclick="removeOptionScore(${qIdx}, ${optIdx}, '${pId}')" style="background:none; border:none; color:#ef4444; cursor:pointer;">✕</button>
+                <button onclick="removeOptionScore(${qIdx}, ${optIdx}, '${pId}')" style="background:none; border:none; color:#ef4444; cursor:pointer;" title="Удалить привязку">✕</button>
               </span>
             `;
           }
 
           let addScoreSelectHtml = `<select onchange="addScoreToOption(${qIdx}, ${optIdx}, this)">
             <option value="">+ Привязать персонажа...</option>
-            ${princessKeys.map(k => `<option value="${k}">${currentQuizData.princesses[k].name}</option>`).join('')}
+            ${princessList.map(p => `<option value="${p.id}">${p.emoji} ${escapeHtml(p.name)}</option>`).join('')}
           </select>`;
 
           optionsHtml += `
@@ -1076,11 +1364,12 @@
       }
       currentQuizData.questions[qIdx].options[optIdx].scores[pId] = 3;
       renderQuestionsList();
+      saveAllChanges();
     }
 
     function addOptionToQuestion(qIdx) {
-      const optKeys = Object.keys(currentQuizData.princesses);
-      const defaultP = optKeys.length > 0 ? optKeys[0] : 'cinderella';
+      const pList = getPrincessList();
+      const defaultP = pList[0] ? pList[0].id : 'cinderella';
       const defScores = {};
       defScores[defaultP] = 3;
 
@@ -1089,6 +1378,7 @@
         scores: defScores
       });
       renderQuestionsList();
+      saveAllChanges();
     }
 
     function deleteOption(qIdx, optIdx) {
@@ -1098,12 +1388,13 @@
       }
       currentQuizData.questions[qIdx].options.splice(optIdx, 1);
       renderQuestionsList();
+      saveAllChanges();
     }
 
     function addNewQuestion() {
-      const optKeys = Object.keys(currentQuizData.princesses);
-      const p1 = optKeys[0] || 'cinderella';
-      const p2 = optKeys[1] || p1;
+      const pList = getPrincessList();
+      const p1 = pList[0] ? pList[0].id : 'cinderella';
+      const p2 = pList[1] ? pList[1].id : p1;
 
       currentQuizData.questions.push({
         id: Date.now(),
@@ -1116,6 +1407,7 @@
       });
       renderQuestionsList();
       updateBadges();
+      saveAllChanges();
       showToast('Вопрос добавлен! ✨');
       
       // Скролл к новому вопросу

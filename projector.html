@@ -25,9 +25,11 @@
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
       position: relative;
+      cursor: default;
+      user-select: none;
     }
 
     /* Анимированный сказочный фон */
@@ -40,8 +42,8 @@
 
     .ambient-glow {
       position: absolute;
-      width: 800px;
-      height: 800px;
+      width: 900px;
+      height: 900px;
       border-radius: 50%;
       background: radial-gradient(circle, rgba(236, 72, 153, 0.22) 0%, rgba(139, 92, 246, 0.12) 50%, transparent 70%);
       top: 50%;
@@ -57,7 +59,7 @@
       position: relative;
       z-index: 10;
       text-align: center;
-      padding-top: 36px;
+      margin-bottom: 24px;
     }
 
     .theatre-badge {
@@ -65,20 +67,20 @@
       align-items: center;
       gap: 8px;
       background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(251, 191, 36, 0.3);
+      border: 1px solid rgba(251, 191, 36, 0.35);
       color: #fde68a;
-      padding: 8px 22px;
+      padding: 8px 24px;
       border-radius: 999px;
       font-size: 16px;
-      font-weight: 600;
+      font-weight: 700;
       letter-spacing: 1.5px;
       text-transform: uppercase;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       backdrop-filter: blur(8px);
     }
 
     .main-title {
-      font-size: 54px;
+      font-size: 56px;
       font-weight: 900;
       letter-spacing: -0.5px;
       background: linear-gradient(135deg, #ffffff 0%, #fbcfe8 50%, #f472b6 100%);
@@ -104,12 +106,12 @@
       gap: 60px;
       max-width: 1200px;
       width: 100%;
-      padding: 20px 40px;
+      padding: 10px 40px;
     }
 
     /* QR код блок */
     .qr-card {
-      background: rgba(255, 255, 255, 0.95);
+      background: rgba(255, 255, 255, 0.96);
       padding: 24px;
       border-radius: 32px;
       box-shadow: 0 25px 60px rgba(236, 72, 153, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.6);
@@ -118,6 +120,7 @@
       align-items: center;
       position: relative;
       animation: gentleFloat 6s ease-in-out infinite alternate;
+      flex-shrink: 0;
     }
 
     @keyframes gentleFloat {
@@ -170,18 +173,21 @@
     .info-column {
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 20px;
       max-width: 480px;
+      width: 100%;
     }
 
     /* Таймер */
     .timer-card {
-      background: rgba(30, 41, 59, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(30, 41, 59, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.15);
       backdrop-filter: blur(16px);
       border-radius: 24px;
       padding: 22px 28px;
       text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
     }
 
     .timer-label {
@@ -198,47 +204,16 @@
       font-weight: 900;
       font-variant-numeric: tabular-nums;
       color: #fde68a;
-      text-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+      text-shadow: 0 0 24px rgba(251, 191, 36, 0.5);
       letter-spacing: 2px;
       line-height: 1;
-      margin-bottom: 12px;
-    }
-
-    .timer-controls {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      opacity: 0.25;
-      transition: opacity 0.2s;
-    }
-
-    .timer-controls:hover, body:hover .timer-controls {
-      opacity: 1;
-    }
-
-    .btn-timer {
-      background: rgba(255, 255, 255, 0.1);
-      color: #e2e8f0;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 8px;
-      padding: 6px 12px;
-      font-size: 12px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.2s;
-    }
-
-    .btn-timer:hover {
-      background: #ec4899;
-      border-color: #ec4899;
-      color: white;
     }
 
     /* Шаги для зрителей */
     .steps-list {
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 12px;
     }
 
     .step-item {
@@ -267,9 +242,10 @@
     }
 
     .step-text {
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 600;
       color: #f1f5f9;
+      line-height: 1.35;
     }
 
     .step-text small {
@@ -280,84 +256,35 @@
       margin-top: 2px;
     }
 
-    /* Нижняя панель */
-    .projector-footer {
-      position: relative;
-      z-index: 10;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
-      padding: 20px 40px;
-      font-size: 14px;
-      color: #64748b;
-    }
-
-    .url-display-box {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 6px 14px;
-      border-radius: 999px;
-      color: #cbd5e1;
-      font-size: 14px;
-      cursor: pointer;
-    }
-
-    .url-display-box:hover {
-      border-color: #ec4899;
-      color: #fff;
-    }
-
-    .corner-actions {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-    }
-
-    .btn-circle {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-      cursor: pointer;
-      text-decoration: none;
-      transition: all 0.2s;
-    }
-
-    .btn-circle:hover {
-      background: #ec4899;
-      border-color: #ec4899;
-      transform: scale(1.08);
-    }
-
-    /* Модальное окно редактирования URL QR-кода */
-    .modal-url {
-      display: none;
+    /* Невидимая/полупрозрачная кнопка полного экрана */
+    .btn-fullscreen-ghost {
       position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.8);
-      z-index: 1000;
+      bottom: 20px;
+      right: 20px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #cbd5e1;
+      display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 18px;
+      cursor: pointer;
+      opacity: 0.3;
+      transition: opacity 0.3s, background 0.3s;
+      z-index: 100;
     }
-    .modal-url.active { display: flex; }
-    .modal-box {
-      background: #1e293b;
-      padding: 28px;
-      border-radius: 20px;
-      max-width: 440px;
-      width: 90%;
-      border: 1px solid #334155;
+
+    .btn-fullscreen-ghost:hover {
+      opacity: 1;
+      background: rgba(236, 72, 153, 0.5);
+      color: #fff;
     }
   </style>
 </head>
-<body>
+<body ondblclick="toggleFullScreen()">
 
   <!-- Фон со звездами -->
   <canvas id="stars-canvas"></canvas>
@@ -365,9 +292,9 @@
 
   <!-- Верхний заголовок -->
   <header class="projector-header">
-    <div class="theatre-badge">✨ Интерактив для зрителей</div>
-    <h1 class="main-title">Какая ты принцесса Disney?</h1>
-    <p class="main-subtitle">Успей пройти быстрый тест до начала спектакля!</p>
+    <div class="theatre-badge" id="proj-badge">✨ Интерактив для зрителей</div>
+    <h1 class="main-title" id="proj-title">Какая ты принцесса Disney?</h1>
+    <p class="main-subtitle" id="proj-subtitle">Успей пройти быстрый тест до начала спектакля!</p>
   </header>
 
   <!-- Центр: QR-код + Таймер + Инструкция -->
@@ -379,7 +306,7 @@
       <div id="qr-container">
         <!-- SVG QR код рендерится через qrcode.js -->
       </div>
-      <div class="qr-callout">
+      <div class="qr-callout" id="proj-qr-callout">
         <span>📸 Наведи камеру телефона</span>
       </div>
     </div>
@@ -387,17 +314,10 @@
     <!-- Инфо и таймер -->
     <div class="info-column">
       
-      <!-- Таймер до спектакля -->
-      <div class="timer-card">
-        <div class="timer-label">До третьего звонка осталось</div>
+      <!-- Таймер до спектакля (управляется из админки) -->
+      <div class="timer-card" id="timer-card">
+        <div class="timer-label" id="timer-label">До третьего звонка осталось</div>
         <div class="timer-display" id="timer-val">07:00</div>
-        <div class="timer-controls">
-          <button class="btn-timer" onclick="setTimer(15)">15 мин</button>
-          <button class="btn-timer" onclick="setTimer(10)">10 мин</button>
-          <button class="btn-timer" onclick="setTimer(5)">5 мин</button>
-          <button class="btn-timer" onclick="setTimer(3)">3 мин</button>
-          <button class="btn-timer" id="btn-toggle-timer" onclick="toggleTimer()">⏸ Пауза</button>
-        </div>
       </div>
 
       <!-- Пошаговые подсказки -->
@@ -405,24 +325,24 @@
         <div class="step-item">
           <div class="step-num">1</div>
           <div class="step-text">
-            Открой камеру телефона
-            <small>QR-код считывается обычной камерой без доп. приложений</small>
+            <span id="step1-title">Открой камеру телефона</span>
+            <small id="step1-desc">QR-код считывается обычной камерой без доп. приложений</small>
           </div>
         </div>
 
         <div class="step-item">
           <div class="step-num">2</div>
           <div class="step-text">
-            Ответь на 7 вопросов
-            <small>Тест занимает ровно 1 минуту</small>
+            <span id="step2-title">Ответь на 7 вопросов</span>
+            <small id="step2-desc">Тест занимает ровно 1 минуту</small>
           </div>
         </div>
 
         <div class="step-item">
           <div class="step-num">3</div>
           <div class="step-text">
-            Узнай свою принцессу
-            <small>Покажи свой результат друзьям и соседям по залу!</small>
+            <span id="step3-title">Узнай свою принцессу</span>
+            <small id="step3-desc">Покажи свой результат друзьям и соседям по залу!</small>
           </div>
         </div>
       </div>
@@ -431,148 +351,163 @@
 
   </main>
 
-  <!-- Подвал -->
-  <footer class="projector-footer">
-    <div class="url-display-box" onclick="openUrlModal()" title="Нажмите, чтобы изменить адрес ссылки QR-кода">
-      🔗 Ссылка: <strong id="target-url-text">...</strong> (нажмите для смены)
-    </div>
+  <!-- Невидимая кнопка полноэкранного режима -->
+  <button class="btn-fullscreen-ghost" onclick="toggleFullScreen()" title="Развернуть на весь экран (F11 или двойной клик)">⛶</button>
 
-    <div class="corner-actions">
-      <button class="btn-circle" onclick="toggleFullScreen()" title="Развернуть на весь экран (F11)">⛶</button>
-      <a href="admin.html" class="btn-circle" title="Панель редактирования вопросов">⚙️</a>
-      <a href="index.html" class="btn-circle" title="Пройти тест самому">📱</a>
-    </div>
-  </footer>
-
-  <!-- Модальное окно для смены целевого URL теста -->
-  <div id="url-modal" class="modal-url">
-    <div class="modal-box">
-      <h3 style="margin-bottom: 12px;">Изменить ссылку QR-кода</h3>
-      <p style="font-size: 13px; color: #94a3b8; margin-bottom: 16px;">
-        Укажите публичный адрес, куда попадает зритель при сканировании (например, адрес на хостинге или IP адрес в Wi-Fi сети зала):
-      </p>
-      <input type="text" id="custom-url-input" style="width: 100%; padding: 10px 14px; background: #0f172a; border: 1px solid #475569; color: #fff; border-radius: 8px; margin-bottom: 16px; font-size: 14px;">
-      <div style="display: flex; justify-content: flex-end; gap: 10px;">
-        <button class="btn-timer" onclick="closeUrlModal()">Отмена</button>
-        <button class="btn-timer" style="background: #ec4899; color: white;" onclick="applyCustomUrl()">Применить</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- QR генератор -->
+  <!-- Скрипты -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
   <script src="qrcode.js"></script>
   <script>
-    // 1. Определение целевого адреса викторины
-    let targetQuizUrl = localStorage.getItem('projector_custom_url') || '';
-    if (!targetQuizUrl) {
-      // По умолчанию берем index.html рядом
-      const loc = window.location;
-      let path = loc.pathname;
-      if (path.endsWith('projector.html')) {
-        path = path.replace('projector.html', 'index.html');
-      } else {
-        path = path + '/index.html';
+    // Дефолтные настройки
+    let projectorState = {
+      showTimer: true,
+      timerMinutes: 7,
+      timerIsRunning: true,
+      timerTargetTimestamp: Date.now() + 7 * 60 * 1000,
+      timerRemainingSeconds: 7 * 60,
+      timerLabel: 'До третьего звонка осталось',
+      badgeText: '✨ Интерактив для зрителей',
+      mainTitle: 'Какая ты принцесса Disney?',
+      subtitle: 'Успей пройти быстрый тест до начала спектакля!',
+      qrCallout: '📸 Наведи камеру телефона',
+      customUrl: '',
+      step1Title: 'Открой камеру телефона',
+      step1Desc: 'QR-код считывается обычной камерой без доп. приложений',
+      step2Title: 'Ответь на 7 вопросов',
+      step2Desc: 'Тест занимает ровно 1 минуту',
+      step3Title: 'Узнай свою принцессу',
+      step3Desc: 'Покажи свой результат друзьям и соседям по залу!'
+    };
+
+    let lastGeneratedUrl = '';
+
+    // Применение настроек к экрану
+    function applyProjectorSettings(settings) {
+      if (!settings) return;
+      projectorState = Object.assign({}, projectorState, settings);
+
+      // 1. Тексты
+      setText('proj-badge', projectorState.badgeText);
+      setText('proj-title', projectorState.mainTitle);
+      setText('proj-subtitle', projectorState.subtitle);
+      setText('proj-qr-callout', projectorState.qrCallout);
+
+      setText('step1-title', projectorState.step1Title);
+      setText('step1-desc', projectorState.step1Desc);
+      setText('step2-title', projectorState.step2Title);
+      setText('step2-desc', projectorState.step2Desc);
+      setText('step3-title', projectorState.step3Title);
+      setText('step3-desc', projectorState.step3Desc);
+
+      // 2. Таймер (показ/скрытие)
+      const timerCard = document.getElementById('timer-card');
+      if (timerCard) {
+        timerCard.style.display = projectorState.showTimer !== false ? 'block' : 'none';
       }
-      targetQuizUrl = `${loc.protocol}//${loc.host}${path}`;
+      setText('timer-label', projectorState.timerLabel);
+
+      // 3. QR-код
+      renderQR();
     }
 
+    function setText(id, text) {
+      const el = document.getElementById(id);
+      if (el && text !== undefined) el.innerText = text;
+    }
+
+    // Определение ссылки и рендер QR
     function renderQR() {
+      let targetUrl = projectorState.customUrl ? projectorState.customUrl.trim() : '';
+
+      if (!targetUrl) {
+        const loc = window.location;
+        let path = loc.pathname;
+        if (path.endsWith('projector.html')) {
+          path = path.replace('projector.html', 'index.html');
+        } else if (!path.endsWith('index.html')) {
+          path = path.replace(/\/?$/, '/index.html');
+        }
+        targetUrl = `${loc.protocol}//${loc.host}${path}`;
+      }
+
+      if (targetUrl === lastGeneratedUrl) return; // избегаем лишних перерисовок
+      lastGeneratedUrl = targetUrl;
+
       const container = document.getElementById('qr-container');
-      const textElem = document.getElementById('target-url-text');
-      textElem.innerText = targetQuizUrl;
-
-      // Генерируем высококачественный SVG QR
-      if (window.QRCodeLib) {
-        container.innerHTML = window.QRCodeLib.generateSVG(targetQuizUrl, 320);
+      if (container && window.QRCodeLib) {
+        container.innerHTML = window.QRCodeLib.generateSVG(targetUrl, 320);
       }
     }
 
-    function openUrlModal() {
-      document.getElementById('custom-url-input').value = targetQuizUrl;
-      document.getElementById('url-modal').classList.add('active');
-    }
+    // Работа таймера
+    function updateTimerTick() {
+      if (projectorState.showTimer === false) return;
 
-    function closeUrlModal() {
-      document.getElementById('url-modal').classList.remove('active');
-    }
+      const timerEl = document.getElementById('timer-val');
+      const timerLabelEl = document.getElementById('timer-label');
+      if (!timerEl) return;
 
-    function applyCustomUrl() {
-      const val = document.getElementById('custom-url-input').value.trim();
-      if (val) {
-        targetQuizUrl = val;
-        localStorage.setItem('projector_custom_url', val);
-        renderQR();
-        closeUrlModal();
+      let sec = 0;
+      if (projectorState.timerIsRunning === false) {
+        // На паузе
+        sec = projectorState.timerRemainingSeconds !== undefined ? projectorState.timerRemainingSeconds : (projectorState.timerMinutes * 60);
+      } else {
+        // Запущен
+        const target = projectorState.timerTargetTimestamp || (Date.now() + (projectorState.timerMinutes || 7) * 60 * 1000);
+        sec = Math.max(0, Math.floor((target - Date.now()) / 1000));
       }
-    }
 
-    // 2. Таймер спектакля
-    let remainingSeconds = 7 * 60;
-    let timerInterval = null;
-    let isTimerRunning = true;
-
-    function formatTime(sec) {
       const m = Math.floor(sec / 60);
       const s = sec % 60;
-      return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
-    }
+      timerEl.innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
 
-    function updateTimerDisplay() {
-      const el = document.getElementById('timer-val');
-      el.innerText = formatTime(remainingSeconds);
-      if (remainingSeconds <= 60) {
-        el.style.color = '#f43f5e';
+      if (sec === 0) {
+        timerEl.style.color = '#f43f5e';
+        if (timerLabelEl) timerLabelEl.innerText = '🔔 СПЕКТАКЛЬ НАЧИНАЕТСЯ!';
+      } else if (sec <= 60) {
+        timerEl.style.color = '#f43f5e';
       } else {
-        el.style.color = '#fde68a';
+        timerEl.style.color = '#fde68a';
+        if (timerLabelEl) timerLabelEl.innerText = projectorState.timerLabel || 'До третьего звонка осталось';
       }
     }
 
-    function startTimer() {
-      if (timerInterval) clearInterval(timerInterval);
-      timerInterval = setInterval(() => {
-        if (remainingSeconds > 0) {
-          remainingSeconds--;
-          updateTimerDisplay();
-        } else {
-          clearInterval(timerInterval);
-          document.getElementById('timer-val').innerText = '00:00';
-          document.querySelector('.timer-label').innerText = '🔔 СПЕКТАКЛЬ НАЧИНАЕТСЯ!';
-        }
-      }, 1000);
-      isTimerRunning = true;
-      document.getElementById('btn-toggle-timer').innerText = '⏸ Пауза';
-    }
+    // Синхронизация с облаком и LocalStorage
+    async function syncProjectorData() {
+      // 1. Проверяем LocalStorage
+      const local = localStorage.getItem('custom_quiz_data');
+      if (local) {
+        try {
+          const parsed = JSON.parse(local);
+          if (parsed.projector) applyProjectorSettings(parsed.projector);
+        } catch(e) {}
+      }
 
-    function setTimer(minutes) {
-      remainingSeconds = minutes * 60;
-      updateTimerDisplay();
-      startTimer();
-    }
-
-    function toggleTimer() {
-      if (isTimerRunning) {
-        clearInterval(timerInterval);
-        isTimerRunning = false;
-        document.getElementById('btn-toggle-timer').innerText = '▶ Пуск';
-      } else {
-        startTimer();
+      // 2. Проверяем Supabase (если подключен)
+      if (typeof fetchQuizFromSupabase === 'function') {
+        try {
+          const remoteData = await fetchQuizFromSupabase();
+          if (remoteData && remoteData.projector) {
+            applyProjectorSettings(remoteData.projector);
+          }
+        } catch(e) {}
       }
     }
 
-    // 3. Полноэкранный режим
+    // Полноэкранный режим
     function toggleFullScreen() {
       if (!document.fullscreenElement) {
         document.documentElement.requestFullscreen().catch(() => {});
       } else {
-        if (document.exitFullscreen) {
-          document.exitFullscreen();
-        }
+        if (document.exitFullscreen) document.exitFullscreen();
       }
     }
 
-    // 4. Падающие сказочные частицы
+    // Падающие сказочные частицы
     function initStarfield() {
       const canvas = document.getElementById('stars-canvas');
+      if (!canvas) return;
       const ctx = canvas.getContext('2d');
 
       function resize() {
@@ -625,12 +560,11 @@
       animate();
     }
 
-    // Старт
     document.addEventListener('DOMContentLoaded', () => {
-      renderQR();
-      updateTimerDisplay();
-      startTimer();
+      syncProjectorData();
       initStarfield();
+      setInterval(updateTimerTick, 1000);
+      setInterval(syncProjectorData, 3500); // авто-синхронизация с админкой каждые 3.5 сек!
     });
   </script>
 </body>
